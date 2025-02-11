@@ -78,7 +78,8 @@ else:
                 response = requests.post(
                     api_url,
                     headers={"Authorization": f"Bearer {api_key}"},
-                    files={"file": ("wifi.jpg", img_bytes, "image/jpeg")}
+                    files={"file": ("wifi.jpg", img_bytes, "image/jpeg")},
+                    timeout=60
                 )
             except Exception as e:
                 st.error(f"APIリクエストに失敗しました: {e}")
