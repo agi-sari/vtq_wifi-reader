@@ -2,9 +2,9 @@
 set -e
 # --- 設定項目 ---
 PROJECT_ID="YOUR_PROJECT_ID"
-SERVICE_NAME="wifi-qrcode-service"
+SERVICE_NAME="vtq-qr-code-reader"
 REGION="asia-northeast1"
-IMAGE_NAME="wifi-qrcode-app"
+IMAGE_NAME="vtq-qr-code-reader"
 TAG="latest"
 DIFY_API_KEY="your_dify_api_key"
 # Docker イメージのビルド

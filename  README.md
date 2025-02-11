@@ -101,13 +101,12 @@ chmod +x deploy.sh
 ./deploy.sh
 ```
 このスクリプトは以下の処理を行います：
-
-Docker イメージのビルド
-Docker イメージの GCR へのプッシュ
-gcloud コマンドを利用した Cloud Run へのデプロイ
+- Docker イメージのビルド
+- Docker イメージの GCR へのプッシュ
+- gcloud コマンドを利用した Cloud Run へのデプロイ
 ※デプロイ時に環境変数 DIFY_API_KEY も設定され、認証なしでアクセスできる状態になります（必要に応じてセキュリティ設定を変更してください）。
-## 注意点
 
+## 注意点
 - DIFY_API_KEY
     - Dify ワークフロー API を利用するための認証キーです。必ず正しい値を設定してください。
 - セキュリティ
