@@ -9,7 +9,7 @@ TAG="latest"
 DIFY_API_KEY="your_dify_api_key"
 # Docker イメージのビルド
 echo "Docker イメージをビルドしています..."
-docker build -t gcr.io/${PROJECT_ID}/${IMAGE_NAME}:${TAG} .
+docker build --platform=linux/amd64 -t gcr.io/${PROJECT_ID}/${IMAGE_NAME}:${TAG} .
 # Docker イメージのプッシュ
 echo "Docker イメージをプッシュしています..."
 docker push gcr.io/${PROJECT_ID}/${IMAGE_NAME}:${TAG}
