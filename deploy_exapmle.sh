@@ -1,24 +1,30 @@
 #!/bin/bash
 set -e
-# --- 設定項目 ---
-PROJECT_ID="YOUR_PROJECT_ID"
-SERVICE_NAME="vtq-qr-code-reader"
+
+# --- 設定項目（記入が必要）---
+PROJECT_ID="YOUR_PROJECT_ID"  # 🔹 GCPのプロジェクトIDを記入
+SERVICE_NAME="wifi-qrcode-service"
 REGION="asia-northeast1"
-IMAGE_NAME="vtq-qr-code-reader"
+IMAGE_NAME="wifi-qrcode-app"
 TAG="latest"
-DIFY_API_KEY="your_dify_api_key"
+DIFY_API_KEY="your_dify_api_key"  # 🔹 DifyのAPIキーを設定
+API_SERVER="https://elecnecta.jp/v1"  # 🔹 APIサーバーURL
+
 # Docker イメージのビルド
-echo "Docker イメージをビルドしています..."
+echo "🐳 Docker イメージをビルドしています..."
 docker build --platform=linux/amd64 -t gcr.io/${PROJECT_ID}/${IMAGE_NAME}:${TAG} .
+
 # Docker イメージのプッシュ
-echo "Docker イメージをプッシュしています..."
+echo "📤 Docker イメージを GCR にプッシュしています..."
 docker push gcr.io/${PROJECT_ID}/${IMAGE_NAME}:${TAG}
-# Cloud Run へのデプロイ
-echo "Cloud Run へデプロイしています..."
+
+# Cloud Run へのデプロイ（環境変数 DIFY_API_KEY, API_SERVER を設定）
+echo "🚀 Cloud Run へデプロイしています..."
 gcloud run deploy ${SERVICE_NAME} \
   --image gcr.io/${PROJECT_ID}/${IMAGE_NAME}:${TAG} \
   --platform managed \
   --region ${REGION} \
-  --set-env-vars DIFY_API_KEY=${DIFY_API_KEY} \
+  --set-env-vars DIFY_API_KEY=${DIFY_API_KEY},API_SERVER=${API_SERVER} \
   --allow-unauthenticated
-echo "デプロイ完了！"
+
+echo "✅ デプロイ完了！Cloud Run のサービスが公開されました！"
