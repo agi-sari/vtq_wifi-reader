@@ -12,8 +12,30 @@ HEADERS = {"Authorization": f"Bearer {DIFY_API_KEY}"}
 
 st.title("カメラ入力 & 画像処理アプリ")
 
-# **カメラで撮影または画像をアップロード**
-uploaded_file = st.camera_input("カメラから画像を撮影") or st.file_uploader("画像を選択", type=["png", "jpg", "jpeg", "webp"])
+# **ボタンの状態を保存するための session_state を初期化**
+if "input_method" not in st.session_state:
+    st.session_state.input_method = None
+if "uploaded_file" not in st.session_state:
+    st.session_state.uploaded_file = None
+
+# **撮影 or アップロードの選択ボタン**
+col1, col2 = st.columns(2)
+with col1:
+    if st.button("📷 撮影する"):
+        st.session_state.input_method = "camera"
+        st.session_state.uploaded_file = None  # リセット
+with col2:
+    if st.button("📁 アップロードする"):
+        st.session_state.input_method = "upload"
+        st.session_state.uploaded_file = None  # リセット
+
+# **カメラ or 画像アップロード UI の表示**
+if st.session_state.input_method == "camera":
+    st.session_state.uploaded_file = st.camera_input("カメラから画像を撮影")
+elif st.session_state.input_method == "upload":
+    st.session_state.uploaded_file = st.file_uploader("画像を選択", type=["png", "jpg", "jpeg", "webp"])
+
+uploaded_file = st.session_state.uploaded_file
 
 if uploaded_file:
     try:
@@ -42,7 +64,7 @@ if uploaded_file:
             st.stop()
 
         upload_file_id = response.json().get("id")
-        st.write("✅ ファイルアップロード完了！")
+        # st.write("✅ ファイルアップロード完了！") # デバッグ用
 
         # **2. ワークフローを実行**
         st.write("🚀 画像処理を実行中...")
@@ -84,14 +106,24 @@ if uploaded_file:
             image_url = files[0]["url"]
             full_image_url = f"{DIFY_BASE_URL}{image_url}" if image_url.startswith("/files/") else image_url
 
-            st.write(f"画像URL: {full_image_url}")  # デバッグ用
+            # st.write(f"画像URL: {full_image_url}")  # デバッグ用
 
             # **URL にアクセスできるかテスト**
             response = requests.get(full_image_url, headers=HEADERS)
 
             if response.status_code == 200:
                 image = Image.open(BytesIO(response.content))
-                st.image(image, caption="処理後の画像", use_column_width=True)
+
+                # **画像の縮小処理**
+                width, height = image.size
+                new_size = (int(width * 0.6), int(height * 0.6))  # 60% に縮小
+                resized_image = image.resize(new_size, Image.ANTIALIAS)
+
+                # **中央揃えで画像を表示**
+                st.markdown(
+                    f"<div style='display: flex; justify-content: center;'><img src='{full_image_url}' width='{new_size[0]}'></div>",
+                    unsafe_allow_html=True
+                )
             else:
                 st.error("❌ 画像の取得に失敗しました。")
                 st.write(f"エラーコード: {response.status_code}")
