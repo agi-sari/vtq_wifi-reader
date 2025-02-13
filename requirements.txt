@@ -1,2 +1,4 @@
-streamlit==1.25.0
-requests>=2.28
+streamlit
+requests
+pillow
+streamlit-js-eval
