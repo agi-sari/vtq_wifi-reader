@@ -5,49 +5,36 @@ import uuid
 from PIL import Image
 from io import BytesIO
 
-# **Dify API 設定**
+# === Dify APIの設定値 ===
 DIFY_BASE_URL = "https://elecnecta.jp"
 DIFY_API_KEY = os.getenv("DIFY_API_KEY")
 HEADERS = {"Authorization": f"Bearer {DIFY_API_KEY}"}
 
 st.title("カメラ入力 & 画像処理アプリ")
 
-# **ボタンの状態を保存するための session_state を初期化**
-if "input_method" not in st.session_state:
-    st.session_state.input_method = None
+# session_state の初期化
 if "uploaded_file" not in st.session_state:
     st.session_state.uploaded_file = None
 
-# **撮影 or アップロードの選択ボタン**
-col1, col2 = st.columns(2)
-with col1:
-    if st.button("📷 撮影する"):
-        st.session_state.input_method = "camera"
-        st.session_state.uploaded_file = None  # リセット
-with col2:
-    if st.button("📁 アップロードする"):
-        st.session_state.input_method = "upload"
-        st.session_state.uploaded_file = None  # リセット
+# 折り畳み（expander）内で、ユーザーに撮影orアップロードを選ばせる
+with st.expander("画像を入力する", expanded=False):
+    input_method = st.radio("入力方法を選択してください", ["カメラで撮影", "ファイルをアップロード"])
 
-# **カメラ or 画像アップロード UI の表示**
-if st.session_state.input_method == "camera":
-    st.session_state.uploaded_file = st.camera_input("カメラから画像を撮影")
-elif st.session_state.input_method == "upload":
-    st.session_state.uploaded_file = st.file_uploader("画像を選択", type=["png", "jpg", "jpeg", "webp"])
+    # カメラ撮影
+    if input_method == "カメラで撮影":
+        st.session_state.uploaded_file = st.camera_input("こちらで撮影してください")
 
+    # ファイルアップロード
+    elif input_method == "ファイルをアップロード":
+        st.session_state.uploaded_file = st.file_uploader("ファイルをアップロード", type=["png","jpg","jpeg","webp"])
+
+# 画像が用意できたら処理を実行
 uploaded_file = st.session_state.uploaded_file
-
 if uploaded_file:
     try:
-        # **1. 画像を Dify にアップロード**
         st.write("📤 画像をアップロード中...")
-
-        # MIME タイプの取得（適切でない場合はデフォルト設定）
         mime_type = uploaded_file.type if uploaded_file.type else "image/png"
-
-        files = {
-            "file": (uploaded_file.name, uploaded_file.getvalue(), mime_type)
-        }
+        files = {"file": (uploaded_file.name, uploaded_file.getvalue(), mime_type)}
         data = {"user": str(uuid.uuid4())}
 
         response = requests.post(
@@ -64,9 +51,8 @@ if uploaded_file:
             st.stop()
 
         upload_file_id = response.json().get("id")
-        # st.write("✅ ファイルアップロード完了！") # デバッグ用
 
-        # **2. ワークフローを実行**
+        # ワークフローを実行
         st.write("🚀 画像処理を実行中...")
         workflow_payload = {
             "inputs": {
@@ -100,38 +86,41 @@ if uploaded_file:
             st.write(result)
             st.stop()
 
-        # **3. 画像の URL を取得して表示**
-        files = result["data"]["outputs"].get("files", [])
-        if files and "url" in files[0]:
-            image_url = files[0]["url"]
-            full_image_url = f"{DIFY_BASE_URL}{image_url}" if image_url.startswith("/files/") else image_url
+        # 生成された画像URLを取得して表示
+        files_output = result["data"]["outputs"].get("files", [])
+        if files_output and "url" in files_output[0]:
+            image_url = files_output[0]["url"]
+            # URLが /files/ で始まる場合はフルパスに修正
+            full_image_url = (
+                f"{DIFY_BASE_URL}{image_url}"
+                if image_url.startswith("/files/")
+                else image_url
+            )
 
-            # st.write(f"画像URL: {full_image_url}")  # デバッグ用
+            # 画像取得テスト
+            response_img = requests.get(full_image_url, headers=HEADERS)
+            if response_img.status_code == 200:
+                image = Image.open(BytesIO(response_img.content))
 
-            # **URL にアクセスできるかテスト**
-            response = requests.get(full_image_url, headers=HEADERS)
-
-            if response.status_code == 200:
-                image = Image.open(BytesIO(response.content))
-
-                # **画像の縮小処理**
+                # 画像を 60% に縮小
                 width, height = image.size
-                new_size = (int(width * 0.6), int(height * 0.6))  # 60% に縮小
+                new_size = (int(width * 0.6), int(height * 0.6))
                 resized_image = image.resize(new_size, Image.ANTIALIAS)
 
-                # **中央揃えで画像を表示**
+                # 中央揃えで表示
                 st.markdown(
-                    f"<div style='display: flex; justify-content: center;'><img src='{full_image_url}' width='{new_size[0]}'></div>",
+                    f"<div style='display: flex; justify-content: center;'>"
+                    f"<img src='{full_image_url}' width='{new_size[0]}'></div>",
                     unsafe_allow_html=True
                 )
             else:
                 st.error("❌ 画像の取得に失敗しました。")
-                st.write(f"エラーコード: {response.status_code}")
+                st.write(f"エラーコード: {response_img.status_code}")
         else:
             st.warning("⚠ 画像の URL が取得できませんでした。")
             st.write(result)
 
     except requests.exceptions.Timeout:
-        st.error("❌ リクエストがタイムアウトしました。ネットワークの状況を確認してください。")
+        st.error("❌ リクエストがタイムアウトしました。")
     except Exception as e:
         st.error(f"❌ エラーが発生しました: {e}")
