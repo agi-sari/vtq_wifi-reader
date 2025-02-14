@@ -93,5 +93,5 @@ chmod +x deploy.sh
 - Cloud Run へのデプロイ
 ## 注意点
 ### Difyワークフローのファイルについて
-「VTQ Wi‑Fi Reader v2.yml」のファイルにDifでインポートできるワークフローDSLをアップロードしてありますので、お使いください。
-- deploy.sh にある DIFY_API_KEY、API_SERVER、DIFY_BASE_URLをご自身のDifyの環境に書き換えてください。
+- 「VTQ Wi‑Fi Reader v2.yml」のファイルにDifでインポートできるワークフローDSLをアップロードしてありますので、お使いください。
+   - deploy.sh にある DIFY_API_KEY、API_SERVER、DIFY_BASE_URLをご自身のDifyの環境に書き換えてください。
