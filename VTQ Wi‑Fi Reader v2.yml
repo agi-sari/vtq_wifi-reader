@@ -1,0 +1,491 @@
+app:
+  description: ''
+  icon: 🎛️
+  icon_background: '#EFF1F5'
+  mode: workflow
+  name: VTQ Wi‑Fi Reader v2
+  use_icon_as_answer_icon: false
+kind: app
+version: 0.1.5
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions: []
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: true
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        image_file_size_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        sourceType: tool
+        targetType: end
+      id: 1739148258480-source-1739148598849-target
+      source: '1739148258480'
+      sourceHandle: source
+      target: '1739148598849'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: start
+        targetType: llm
+      id: 1739147741488-source-1739227949027-target
+      source: '1739147741488'
+      sourceHandle: source
+      target: '1739227949027'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: if-else
+      id: 1739227949027-source-1739228623530-target
+      source: '1739227949027'
+      sourceHandle: source
+      target: '1739228623530'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: tool
+      id: 1739228623530-true-1739148258480-target
+      source: '1739228623530'
+      sourceHandle: 'true'
+      target: '1739148258480'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: template-transform
+      id: 1739228623530-false-1739260060776-target
+      source: '1739228623530'
+      sourceHandle: 'false'
+      target: '1739260060776'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: template-transform
+        targetType: end
+      id: 1739260060776-source-1739260006592-target
+      source: '1739260060776'
+      sourceHandle: source
+      target: '1739260006592'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: tool
+        targetType: template-transform
+      id: 1739148258480-fail-branch-1739260177287-target
+      source: '1739148258480'
+      sourceHandle: fail-branch
+      target: '1739260177287'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: template-transform
+        targetType: end
+      id: 1739260177287-source-1739228459344-target
+      source: '1739260177287'
+      sourceHandle: source
+      target: '1739228459344'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: template-transform
+        targetType: end
+      id: 17392602416500-source-1739260265322-target
+      source: '17392602416500'
+      sourceHandle: source
+      target: '1739260265322'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: template-transform
+      id: 1739227949027-fail-branch-17392602416500-target
+      source: '1739227949027'
+      sourceHandle: fail-branch
+      target: '17392602416500'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: ''
+        selected: false
+        title: 入力
+        type: start
+        variables:
+        - allowed_file_extensions: []
+          allowed_file_types:
+          - image
+          allowed_file_upload_methods:
+          - local_file
+          label: image
+          max_length: 48
+          options: []
+          required: true
+          type: file
+          variable: image
+      height: 90
+      id: '1739147741488'
+      position:
+        x: 30
+        y: 267
+      positionAbsolute:
+        x: 30
+        y: 267
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        error_strategy: fail-branch
+        provider_id: qrcode
+        provider_name: qrcode
+        provider_type: builtin
+        selected: false
+        title: QR生成
+        tool_configurations:
+          border: 2
+          error_correction: M
+        tool_label: Generate QR Code
+        tool_name: qrcode_generator
+        tool_parameters:
+          content:
+            type: mixed
+            value: '{{#1739227949027.text#}}'
+        type: tool
+      height: 152
+      id: '1739148258480'
+      position:
+        x: 947.7142857142856
+        y: 267
+      positionAbsolute:
+        x: 947.7142857142856
+        y: 267
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - '1739233262907'
+          - text
+          variable: text
+        - value_selector:
+          - '1739148258480'
+          - files
+          variable: files
+        selected: false
+        title: 出力
+        type: end
+      height: 116
+      id: '1739148598849'
+      position:
+        x: 1237.4285714285716
+        y: 267
+      positionAbsolute:
+        x: 1237.4285714285716
+        y: 267
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        error_strategy: fail-branch
+        model:
+          completion_params:
+            temperature: 0.4
+          mode: chat
+          name: gemini-1.5-flash-002
+          provider: google
+        prompt_template:
+        - id: b6bfe8c8-4e07-4eb4-85a6-8fec04b2ac29
+          role: system
+          text: あなたは優秀なAIアシスタントです。
+        - id: b3de08ed-b179-43f7-821c-d19171d49e29
+          role: user
+          text: '写真に含まれるSSID、パスワードの情報を読み取り、以下の形式で出力してください。SSIDはIDやid、パスワードはpassword、PASS、PW、など別の呼び方で書かれている場合もありますので可能な限り意味を汲み取って判定してください。
+
+            ## 制約
+
+            以下の出力形式を守り、前置きや注釈は絶対に入れないでください。
+
+            ## 出力形式
+
+            WIFI:S:{SSID};T:WPA;R:1;P:{パスワード};;
+
+            ## 出力例
+
+            ### 例1
+
+            WIFI:S:abcdefg;T:WPA;R:1;P:password;;
+
+            ### 例2
+
+            WIFI:S:aiueo;T:WPA;R:1;P:kakikukeko;;
+
+            ### 例3
+
+            WIFI:S:tanoshiwifi;T:WPA;R:1;P:tanoshipass;;'
+        retry_config:
+          max_retries: 3
+          retry_enabled: false
+          retry_interval: 100
+        selected: false
+        title: 読み取り
+        type: llm
+        variables: []
+        vision:
+          configs:
+            detail: high
+            variable_selector:
+            - '1739147741488'
+            - image
+          enabled: true
+      height: 134
+      id: '1739227949027'
+      position:
+        x: 334
+        y: 267
+      positionAbsolute:
+        x: 334
+        y: 267
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - '1739260177287'
+          - output
+          variable: output
+        selected: false
+        title: QR生成エラー
+        type: end
+      height: 90
+      id: '1739228459344'
+      position:
+        x: 1237.4285714285716
+        y: 461.59142750250976
+      positionAbsolute:
+        x: 1237.4285714285716
+        y: 461.59142750250976
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: start with
+            id: f6ad7a10-f630-4317-a1db-70df00f05031
+            value: 'WIFI:'
+            varType: string
+            variable_selector:
+            - '1739227949027'
+            - text
+          - comparison_operator: contains
+            id: ba3eedef-d1bc-4f01-85d2-39a0d5fccc10
+            value: ;;
+            varType: string
+            variable_selector:
+            - '1739227949027'
+            - text
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 結果判定
+        type: if-else
+      height: 152
+      id: '1739228623530'
+      position:
+        x: 639.4285714285714
+        y: 267
+      positionAbsolute:
+        x: 639.4285714285714
+        y: 267
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - '1739260060776'
+          - output
+          variable: output
+        selected: false
+        title: フォーマットエラー
+        type: end
+      height: 90
+      id: '1739260006592'
+      position:
+        x: 1237.4285714285716
+        y: 577.0258225588977
+      positionAbsolute:
+        x: 1237.4285714285716
+        y: 577.0258225588977
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        selected: false
+        template: 無効な文字列が読み込まれました。もう一度やり直してみてください。
+        title: エラー2
+        type: template-transform
+        variables: []
+      height: 54
+      id: '1739260060776'
+      position:
+        x: 947.7142857142856
+        y: 577.0258225588977
+      positionAbsolute:
+        x: 947.7142857142856
+        y: 577.0258225588977
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        selected: false
+        template: 'QRコード生成でエラーが発生しました。もう一度やり直してみてください。
+
+          '
+        title: エラー3
+        type: template-transform
+        variables: []
+      height: 54
+      id: '1739260177287'
+      position:
+        x: 947.7142857142856
+        y: 461.59142750250976
+      positionAbsolute:
+        x: 947.7142857142856
+        y: 461.59142750250976
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        selected: false
+        template: 読み取り時にエラーが発生しました。もう一度やり直してみてください。
+        title: エラー1
+        type: template-transform
+        variables: []
+      height: 54
+      id: '17392602416500'
+      position:
+        x: 947.7142857142856
+        y: 693.5209932534674
+      positionAbsolute:
+        x: 947.7142857142856
+        y: 693.5209932534674
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - '17392602416500'
+          - output
+          variable: output
+        selected: false
+        title: 終了 4
+        type: end
+      height: 90
+      id: '1739260265322'
+      position:
+        x: 1237.4285714285716
+        y: 693.5209932534674
+      positionAbsolute:
+        x: 1237.4285714285716
+        y: 693.5209932534674
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: -728.647417853758
+      y: 78.90396431091852
+      zoom: 0.9972185713510199
